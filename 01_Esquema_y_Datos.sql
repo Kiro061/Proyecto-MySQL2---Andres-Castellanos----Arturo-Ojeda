@@ -74,7 +74,9 @@ CREATE TABLE detalle_ventas(
 	FOREIGN KEY (id_venta) REFERENCES ventas(id),
 	FOREIGN KEY (id_producto) REFERENCES productos(id)
 );
-
+-- //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+-- Tablas adicionales
+-- //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 CREATE TABLE IF NOT EXISTS log_nuevos_clientes (
     id INT AUTO_INCREMENT PRIMARY KEY,
     id_cliente INT NOT NULL,
@@ -132,8 +134,186 @@ ALTER TABLE clientes ADD COLUMN total_gastado DECIMAL(10,2) NOT NULL DEFAULT 0.0
 
 
 ALTER TABLE categoria ADD COLUMN total_productos INT NOT NULL DEFAULT 0;
+-- //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+CREATE TABLE visitas_producto (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    id_producto INT, id_cliente INT NULL,
+    fecha_visita TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+-- //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+-- Para evento 1
+CREATE TABLE reporte_ventas_semanal (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    semana_inicio DATE NOT NULL,
+    semana_fin DATE NOT NULL,
+    total_ventas INT NOT NULL DEFAULT 0,
+    ingresos_totales DECIMAL(10,2) NOT NULL DEFAULT 0.00,
+    fecha_generacion TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
 
+-- Para evento 2
+CREATE TABLE temp_sesiones (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    id_cliente INT NOT NULL,
+    datos TEXT,
+    creado_en TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
 
+-- Para evento 3
+CREATE TABLE logs_actividad (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    descripcion TEXT NOT NULL,
+    tipo VARCHAR(50),
+    fecha TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    eliminado BOOLEAN DEFAULT FALSE
+);
+
+CREATE TABLE logs_historicos (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    id_log_original INT,
+    descripcion TEXT NOT NULL,
+    tipo VARCHAR(50),
+    fecha_original TIMESTAMP,
+    archivado_en TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+-- Para evento 4
+CREATE TABLE codigos_descuento (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    codigo VARCHAR(50) UNIQUE NOT NULL,
+    descuento_pct DECIMAL(5,2) NOT NULL,
+    fecha_expiracion DATE NOT NULL,
+    activo BOOLEAN DEFAULT TRUE
+);
+
+-- Para evento 5
+CREATE TABLE lealtad_clientes (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    id_cliente INT NOT NULL UNIQUE,
+    total_compras DECIMAL(10,2) DEFAULT 0.00,
+    nivel VARCHAR(20) DEFAULT 'Bronce',
+    actualizado_en TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    FOREIGN KEY (id_cliente) REFERENCES clientes(id)
+);
+
+-- Para evento 6
+CREATE TABLE lista_reabastecimiento (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    id_producto INT NOT NULL,
+    stock_actual INT NOT NULL,
+    generado_en TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (id_producto) REFERENCES productos(id)
+);
+
+-- Para evento 8: estado de cuentas de clientes
+ALTER TABLE clientes
+    ADD COLUMN IF NOT EXISTS activo BOOLEAN DEFAULT TRUE,
+    ADD COLUMN IF NOT EXISTS ultima_compra TIMESTAMP NULL,
+    ADD COLUMN IF NOT EXISTS fecha_nacimiento DATE NULL;
+
+-- Para evento 9
+CREATE TABLE resumen_ventas_diario (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    fecha DATE NOT NULL UNIQUE,
+    total_ordenes INT DEFAULT 0,
+    ingresos_totales DECIMAL(10,2) DEFAULT 0.00,
+    creado_en TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+-- Para evento 11
+CREATE TABLE cupones_cumpleanos (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    id_cliente INT NOT NULL,
+    cupon VARCHAR(50) NOT NULL,
+    generado_en DATE DEFAULT (CURRENT_DATE),
+    FOREIGN KEY (id_cliente) REFERENCES clientes(id)
+);
+
+-- Para evento 12
+CREATE TABLE ranking_productos (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    id_producto INT NOT NULL UNIQUE,
+    unidades_vendidas INT DEFAULT 0,
+    posicion INT DEFAULT 0,
+    actualizado_en TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    FOREIGN KEY (id_producto) REFERENCES productos(id)
+);
+
+-- Para evento 13
+CREATE TABLE backup_clientes (
+    id INT,
+    nombre VARCHAR(100),
+    apellido VARCHAR(100),
+    email VARCHAR(50),
+    direccion_envio TEXT,
+    fecha_registro TIMESTAMP,
+    backup_en TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE backup_ventas (
+    id INT,
+    id_clientes INT,
+    fecha_venta TIMESTAMP,
+    estado VARCHAR(50),
+    total DECIMAL(10,2),
+    backup_en TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+-- Para evento 14
+CREATE TABLE carritos (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    id_cliente INT NOT NULL,
+    id_producto INT NOT NULL,
+    cantidad INT NOT NULL DEFAULT 1,
+    agregado_en TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (id_cliente) REFERENCES clientes(id),
+    FOREIGN KEY (id_producto) REFERENCES productos(id)
+);
+
+-- Para evento 15
+CREATE TABLE kpis_mensuales (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    mes DATE NOT NULL UNIQUE,
+    total_ventas INT DEFAULT 0,
+    ingresos DECIMAL(10,2) DEFAULT 0.00,
+    ticket_promedio DECIMAL(10,2) DEFAULT 0.00,
+    clientes_nuevos INT DEFAULT 0,
+    calculado_en TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+-- Para evento 17
+CREATE TABLE log_tamanio_bd (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    tamanio_mb DECIMAL(10,2) NOT NULL,
+    registrado_en TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+-- Para evento 18
+CREATE TABLE actividad_sospechosa (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    id_cliente INT NOT NULL,
+    pedidos_fallidos INT DEFAULT 0,
+    detectado_en TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (id_cliente) REFERENCES clientes(id)
+);
+
+-- Para evento 19
+CREATE TABLE reporte_proveedores (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    id_proveedor INT NOT NULL,
+    mes DATE NOT NULL,
+    total_productos_activos INT DEFAULT 0,
+    ingresos_generados DECIMAL(10,2) DEFAULT 0.00,
+    creado_en TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (id_proveedor) REFERENCES proveedores(id)
+);
+
+-- Para evento 20
+ALTER TABLE productos
+    ADD COLUMN IF NOT EXISTS eliminado_en TIMESTAMP NULL;
+
+ALTER TABLE clientes
+    ADD COLUMN IF NOT EXISTS eliminado_en TIMESTAMP NULL;
 -- ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 --	INSERCION DE DATOS
 -- ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
