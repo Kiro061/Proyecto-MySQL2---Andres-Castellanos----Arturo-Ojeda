@@ -1,6 +1,6 @@
 # 🛒 Base de Datos E-Commerce — MySQL
 
-**Proyecto de bases de datos | Andrés Castellanos**
+**Proyecto de bases de datos | Andrés Castellanos  Arturo Ojeda**
 
 Base de datos relacional para una tienda en línea, implementada en MySQL. Incluye el esquema completo, datos de prueba, consultas avanzadas, funciones definidas por el usuario, triggers, eventos programados, procedimientos almacenados y configuración de seguridad por roles.
 
@@ -9,7 +9,7 @@ Base de datos relacional para una tienda en línea, implementada en MySQL. Inclu
 ## 📁 Estructura del Proyecto
 
 ```
-Proyecto-MySQL2---Andres-Castellanos/
+Proyecto-MySQL2---Andres-Castellanos -- Arturo Ojeda/
 │
 ├── 01_Esquema_y_Datos.sql          # Creación de tablas e inserción de datos
 ├── 02_Consultas_Avanzadas.sql      # 20 consultas analíticas
