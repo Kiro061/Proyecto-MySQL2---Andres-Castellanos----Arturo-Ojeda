@@ -11,9 +11,6 @@ CREATE TABLE IF NOT EXISTS log_cambios_precio (
     fecha_cambio TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
 
-
-
-
 -- 1.trg_audit_precio_producto_after_update: Guarda un log de cambios de precios.
 ----------------------------------------------------------------------------------------------------
 
